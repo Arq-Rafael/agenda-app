@@ -1,0 +1,76 @@
+:root {
+    /* "Happy & Tender" Palette */
+    --color-bg-soft: #fff5f8;       /* Very light pinkish white */
+    --color-primary: #ffacc7;       /* Soft Pink */
+    --color-primary-dark: #ff8fab;  /* Darker Pink */
+    --color-accent: #ffd3b6;        /* Peach */
+    --color-success: #a8e6cf;       /* Mint Green */
+    --color-calm: #dcedc1;          /* Light Green */
+    --color-text: #5d5458;          /* Soft Brown/Grey - easier on eyes than black */
+    --color-card: #ffffff;
+    
+    --shadow-soft: 8px 8px 16px #e6dada, -8px -8px 16px #ffffff;
+    --shadow-inner: inset 6px 6px 12px #faeef1, inset -6px -6px 12px #ffffff;
+    
+    --font-main: 'Segoe UI', 'Roboto', 'Helvetica', sans-serif; /* Fallback to system rounded */
+    --radius-lg: 24px;
+    --radius-md: 16px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-main);
+    background-color: var(--color-bg-soft);
+    color: var(--color-text);
+    overflow-x: hidden;
+}
+
+/* Glass/Neumorphism Cards */
+.card {
+    background: var(--color-card);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px rgba(255, 172, 199, 0.15);
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.btn-happy {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 143, 171, 0.4);
+}
+
+.btn-happy:hover {
+    transform: translateY(-2px) scale(1.05);
+    background: var(--color-primary-dark);
+}
+
+.btn-calm {
+    background: var(--color-success);
+    color: #3b6b55;
+}
+
+/* Typography */
+h1, h2, h3 {
+    margin-top: 0;
+    color: #4a4044;
+}
+
+h1 {
+    font-size: 2rem;
+    background: -webkit-linear-gradient(45deg, #ff8fab, #ffd3b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
