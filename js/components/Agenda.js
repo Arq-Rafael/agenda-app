@@ -19,6 +19,8 @@ const Agenda = () => {
   const [rewardClaimedDate, setRewardClaimedDate] = useState(null);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [newlyUnlocked, setNewlyUnlocked] = useState(null);
+  const [stickerHistory, setStickerHistory] = useState([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   // Load from localStorage on mount
@@ -28,6 +30,7 @@ const Agenda = () => {
         const savedPoints = localStorage.getItem('agenda_points');
         const savedStickers = localStorage.getItem('agenda_stickers');
         const savedRewardDate = localStorage.getItem('agenda_reward_date');
+        const savedHistory = localStorage.getItem('agenda_sticker_history');
 
         if (savedTasks) setTasks(JSON.parse(savedTasks));
         else {
@@ -40,6 +43,7 @@ const Agenda = () => {
         if (savedPoints) setPoints(parseInt(savedPoints, 10));
         if (savedStickers) setUnlockedStickers(JSON.parse(savedStickers));
         if (savedRewardDate) setRewardClaimedDate(savedRewardDate);
+        if (savedHistory) setStickerHistory(JSON.parse(savedHistory));
     } catch (e) {
         console.error("Error loading data", e);
     } finally {
@@ -53,8 +57,9 @@ const Agenda = () => {
     localStorage.setItem('agenda_tasks', JSON.stringify(tasks));
     localStorage.setItem('agenda_points', points.toString());
     localStorage.setItem('agenda_stickers', JSON.stringify(unlockedStickers));
+    localStorage.setItem('agenda_sticker_history', JSON.stringify(stickerHistory));
     if (rewardClaimedDate) localStorage.setItem('agenda_reward_date', rewardClaimedDate);
-  }, [tasks, points, unlockedStickers, rewardClaimedDate, loaded]);
+  }, [tasks, points, unlockedStickers, rewardClaimedDate, stickerHistory, loaded]);
 
   const addTask = (e) => {
     e.preventDefault();
@@ -66,8 +71,9 @@ const Agenda = () => {
 
   const checkDailyCompletion = (currentTasks) => {
       const allDone = currentTasks.length > 0 && currentTasks.every(t => t.done);
-      const today = new Date().toDateString();
+      const today = new Date().toLocaleDateString(); // Localized date string for history
       
+      // Check if reward claimed for THIS specific date string to be safe
       if (allDone && rewardClaimedDate !== today) {
           triggerReward(today);
       }
@@ -80,6 +86,10 @@ const Agenda = () => {
       if (locked.length > 0) {
           const randomSticker = locked[Math.floor(Math.random() * locked.length)];
           setUnlockedStickers(prev => [...prev, randomSticker]);
+          
+          // Add to history
+          setStickerHistory(prev => [...prev, { date: today, sticker: randomSticker }]);
+
           setNewlyUnlocked(randomSticker);
           setShowRewardModal(true);
           setRewardClaimedDate(today);
@@ -126,8 +136,16 @@ const Agenda = () => {
     <div className="agenda" style=${{ paddingBottom: '50px', position: 'relative' }}>
         <div style=${{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <h2 style=${{ color: '#ff8fab', margin: 0 }}>📅 Agenda</h2>
-            <div style=${{ background: 'white', padding: '5px 15px', borderRadius: '20px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', color: '#555', fontWeight: 'bold' }}>
-                💎 ${points} pts
+            <div style=${{ display: 'flex', gap: '10px' }}>
+                <button 
+                    onClick=${() => setShowHistoryModal(true)}
+                    style=${{ background: '#e0f7fa', color: '#006064', border: 'none', padding: '5px 12px', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem' }}
+                >
+                    📖 Mi Álbum
+                </button>
+                <div style=${{ background: 'white', padding: '5px 15px', borderRadius: '20px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', color: '#555', fontWeight: 'bold' }}>
+                    💎 ${points} pts
+                </div>
             </div>
         </div>
       
@@ -294,6 +312,73 @@ const Agenda = () => {
                 >
                     ¡Genial!
                 </button>
+            </${motion.div}>
+        </${motion.div}>
+      `}
+
+      ${showHistoryModal && html`
+        <${motion.div}
+            initial=${{ opacity: 0 }}
+            animate=${{ opacity: 1 }}
+            exit=${{ opacity: 0 }}
+            style=${{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(3px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1000
+            }}
+            onClick=${() => setShowHistoryModal(false)}
+        >
+            <${motion.div}
+                initial=${{ scale: 0.9, opacity: 0 }}
+                animate=${{ scale: 1, opacity: 1 }}
+                exit=${{ scale: 0.9, opacity: 0 }}
+                style=${{
+                    background: 'white',
+                    width: '90%',
+                    maxWidth: '400px',
+                    maxHeight: '80vh',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+                onClick=${(e) => e.stopPropagation()}
+            >
+                <div style=${{ padding: '20px', background: '#e0f7fa', borderBottom: '1px solid #b2ebf2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style=${{ margin: 0, color: '#006064' }}>📖 Mi Álbum de Logros</h3>
+                    <button onClick=${() => setShowHistoryModal(false)} style=${{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>✖️</button>
+                </div>
+                
+                <div style=${{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                    ${stickerHistory.length === 0 ? html`
+                        <div style=${{ textAlign: 'center', padding: '40px 20px', color: '#888' }}>
+                            <div style=${{ fontSize: '3rem', marginBottom: '10px', opacity: 0.5 }}>🏺</div>
+                            <p>Aún no hay historia escrita.</p>
+                            <p style=${{ fontSize: '0.9rem' }}>Completa tus tareas diarias para llenar tu álbum.</p>
+                        </div>
+                    ` : html`
+                        <div style=${{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '15px' }}>
+                            ${stickerHistory.map((item, index) => html`
+                                <div key=${index} style=${{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#f9f9f9', padding: '10px', borderRadius: '10px' }}>
+                                    <div style=${{ fontSize: '2.5rem', marginBottom: '5px' }}>${item.sticker}</div>
+                                    <div style=${{ fontSize: '0.7rem', color: '#999', textAlign: 'center' }}>${item.date}</div>
+                                </div>
+                            `)}
+                        </div>
+                    `}
+                </div>
+                
+                <div style=${{ padding: '15px', borderTop: '1px solid #eee', textAlign: 'center', fontSize: '0.8rem', color: '#aaa' }}>
+                    ¡Sigue así! 🌟
+                </div>
             </${motion.div}>
         </${motion.div}>
       `}

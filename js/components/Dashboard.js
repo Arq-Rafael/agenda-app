@@ -2,24 +2,42 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import htm from 'https://esm.sh/htm';
 import MoodTracker from './MoodTracker.js';
+import UserProfile from './UserProfile.js';
 
 const html = htm.bind(React.createElement);
 
 const Dashboard = ({ setView }) => {
   const [quote, setQuote] = useState("Eres capaz de cosas increíbles, respira.");
+  const [userName, setUserName] = useState(localStorage.getItem('user_name') || '');
+  const [showProfileModal, setShowProfileModal] = useState(!localStorage.getItem('user_name'));
+
+  const handleSaveName = (name) => {
+    setUserName(name);
+    localStorage.setItem('user_name', name);
+    setShowProfileModal(false);
+  };
 
   return html`
     <div style=${{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
       
+      <${UserProfile} isOpen=${showProfileModal} onSave=${handleSaveName} />
+
       <section className="card" style=${{ textAlign: 'center', background: 'linear-gradient(135deg, #fff5f8 0%, #ffffff 100%)' }}>
         <${motion.h1} 
           initial=${{ scale: 0.9 }} 
           animate=${{ scale: 1 }} 
           transition=${{ type: 'spring', stiffness: 200 }}
         >
-          ¡Hola, hermosa!
+          ¡Hola, ${userName || 'hermosa'}!
         </${motion.h1}>
         <p style=${{ fontSize: '1.2rem', color: '#7a7a7a', fontStyle: 'italic' }}>"${quote}"</p>
+        
+        <button 
+            onClick=${() => setShowProfileModal(true)}
+            style=${{ background: 'none', border: 'none', color: '#ffacc7', cursor: 'pointer', fontSize: '0.8rem', marginTop: '10px', textDecoration: 'underline' }}
+        >
+            (Cambiar nombre)
+        </button>
       </section>
 
       <${MoodTracker} />

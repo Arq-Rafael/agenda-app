@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import htm from 'https://esm.sh/htm';
 import Assistant from './Assistant.js';
+import SoundScapes from './SoundScapes.js';
 
 const html = htm.bind(React.createElement);
 
@@ -32,6 +33,7 @@ const Layout = ({ children, currentView, setView }) => {
       </main>
       
       <${Assistant} />
+      <${SoundScapes} />
 
       <footer style=${{ padding: '20px', textAlign: 'center', color: '#999', fontSize: '0.8rem' }}>
         Hecho con amor para ti ❤️
