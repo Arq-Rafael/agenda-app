@@ -4,7 +4,7 @@ import htm from 'https://esm.sh/htm';
 
 const html = htm.bind(React.createElement);
 
-const SoundScapes = () => {
+const SoundScapes = ({ embedded = false }) => {
     const [activeSound, setActiveSound] = useState('off'); // off, rain, forest
     const [volume, setVolume] = useState(0.5);
     const [isOpen, setIsOpen] = useState(false);
@@ -125,9 +125,6 @@ const SoundScapes = () => {
             }
             if (Math.random() > 0.7) playBird();
         }, 2000);
-        
-        // Store interval clean up mechanism is tricky here without refs, 
-        // relying on activeSound check inside interval.
     };
 
     const playBird = () => {
@@ -152,6 +149,69 @@ const SoundScapes = () => {
         osc.stop(ctx.currentTime + 0.3);
     };
 
+    const Controls = html`
+        <div style=${{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            gap: '10px',
+            width: '100%'
+        }}>
+            <h4 style=${{ margin: '0 0 10px 0', color: '#888', fontSize: '0.9rem', textAlign: 'center' }}>🎧 Atmósfera</h4>
+            
+            <button 
+                onClick=${() => setActiveSound('rain')}
+                style=${{ 
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    background: activeSound === 'rain' ? '#e0f7fa' : '#f9f9f9',
+                    border: '1px solid #eee', padding: '10px', borderRadius: '15px', cursor: 'pointer',
+                    color: activeSound === 'rain' ? '#006064' : '#555',
+                    fontWeight: activeSound === 'rain' ? 'bold' : 'normal'
+                }}
+            >
+                <span>Lluvia Suave</span> <span>🌧️</span>
+            </button>
+
+            <button 
+                onClick=${() => setActiveSound('forest')}
+                style=${{ 
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    background: activeSound === 'forest' ? '#f1f8e9' : '#f9f9f9',
+                    border: '1px solid #eee', padding: '10px', borderRadius: '15px', cursor: 'pointer',
+                    color: activeSound === 'forest' ? '#33691e' : '#555',
+                    fontWeight: activeSound === 'forest' ? 'bold' : 'normal'
+                }}
+            >
+                <span>Bosque Zen</span> <span>🌲</span>
+            </button>
+
+            <button 
+                onClick=${() => setActiveSound('off')}
+                style=${{ 
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    background: activeSound === 'off' ? '#ffebee' : '#f9f9f9',
+                    border: '1px solid #eee', padding: '10px', borderRadius: '15px', cursor: 'pointer',
+                    color: activeSound === 'off' ? '#c62828' : '#555',
+                    fontWeight: activeSound === 'off' ? 'bold' : 'normal'
+                }}
+            >
+                <span>Silencio</span> <span>🔇</span>
+            </button>
+            
+            <div style=${{ marginTop: '10px' }}>
+                <input 
+                    type="range" 
+                    min="0" max="1" step="0.1" 
+                    value=${volume} 
+                    onChange=${(e) => setVolume(parseFloat(e.target.value))}
+                    style=${{ width: '100%', accentColor: '#ffacc7' }}
+                />
+            </div>
+        </div>
+    `;
+
+    if (embedded) {
+        return Controls;
+    }
 
     return html`
         <div style=${{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
@@ -172,54 +232,7 @@ const SoundScapes = () => {
                             width: '150px'
                         }}
                     >
-                        <h4 style=${{ margin: 0, color: '#888', fontSize: '0.9rem' }}>Atmósfera</h4>
-                        
-                        <button 
-                            onClick=${() => setActiveSound('rain')}
-                            style=${{ 
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                background: activeSound === 'rain' ? '#e0f7fa' : 'transparent',
-                                border: 'none', padding: '8px', borderRadius: '10px', cursor: 'pointer',
-                                color: activeSound === 'rain' ? '#006064' : '#555'
-                            }}
-                        >
-                            <span>Lluvia</span> <span>🌧️</span>
-                        </button>
-
-                        <button 
-                            onClick=${() => setActiveSound('forest')}
-                            style=${{ 
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                background: activeSound === 'forest' ? '#f1f8e9' : 'transparent',
-                                border: 'none', padding: '8px', borderRadius: '10px', cursor: 'pointer',
-                                color: activeSound === 'forest' ? '#33691e' : '#555'
-                            }}
-                        >
-                            <span>Bosque</span> <span>🌲</span>
-                        </button>
-
-                        <button 
-                            onClick=${() => setActiveSound('off')}
-                            style=${{ 
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                background: activeSound === 'off' ? '#ffebee' : 'transparent',
-                                border: 'none', padding: '8px', borderRadius: '10px', cursor: 'pointer',
-                                color: activeSound === 'off' ? '#c62828' : '#555'
-                            }}
-                        >
-                            <span>Silencio</span> <span>🔇</span>
-                        </button>
-                        
-                        <div style=${{ marginTop: '5px' }}>
-                            <input 
-                                type="range" 
-                                min="0" max="1" step="0.1" 
-                                value=${volume} 
-                                onChange=${(e) => setVolume(parseFloat(e.target.value))}
-                                style=${{ width: '100%', accentColor: '#ffacc7' }}
-                            />
-                        </div>
-
+                       ${Controls}
                     </${motion.div}>
                 `}
             </${AnimatePresence}>
