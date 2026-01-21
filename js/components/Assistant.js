@@ -37,7 +37,7 @@ const Assistant = () => {
       setAssistantMode('music');
   };
 
-  // Auto show tip occasionally (less frequent now)
+  // Auto show tip occasionally
   useEffect(() => {
     const timer = setInterval(() => {
       if (!showMenu) {
@@ -50,7 +50,7 @@ const Assistant = () => {
   }, [showMenu]);
 
   return html`
-    <div style=${{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+    <div style=${{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
       <${AnimatePresence}>
         ${showMenu && html`
           <${motion.div}
@@ -74,7 +74,7 @@ const Assistant = () => {
                 <div style=${{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <p style=${{ margin: '0 0 10px 0', textAlign: 'center', fontWeight: 'bold', color: '#ff8fab' }}>¿En qué te ayudo?</p>
                     <button onClick=${showRandomTip} style=${{ background: '#fff0f5', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', color: '#555' }}>
-                        <span>🦴</span> Dame un consejo
+                        <span>💝</span> Dame un consejo
                     </button>
                     <button onClick=${showMusic} style=${{ background: '#e0f2f1', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', color: '#555' }}>
                         <span>🎵</span> Poner música
@@ -99,12 +99,12 @@ const Assistant = () => {
             <div style=${{ 
                 position: 'absolute', 
                 bottom: '-10px', 
-                right: '30px', 
+                left: '30px', 
                 width: '20px', 
                 height: '20px', 
                 background: 'white', 
                 transform: 'rotate(45deg)',
-                borderRight: '2px solid #fff0f5',
+                borderLeft: '2px solid #fff0f5',
                 borderBottom: '2px solid #fff0f5'
             }}></div>
           </${motion.div}>
@@ -112,24 +112,55 @@ const Assistant = () => {
       </${AnimatePresence}>
 
       <${motion.button}
-        whileHover=${{ scale: 1.1, rotate: 5 }}
-        whileTap=${{ scale: 0.9 }}
+        animate=${{
+          y: [0, -10, 0],
+          rotate: [0, 5, -5, 0]
+        }}
+        transition=${{
+          y: {
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          },
+          rotate: {
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }
+        }}
+        whileHover=${{ 
+          scale: 1.15,
+          rotate: 0,
+          y: 0,
+          transition: { duration: 0.3 }
+        }}
+        whileTap=${{ scale: 0.95 }}
         onClick=${toggleMenu}
         style=${{ 
-          width: '80px', 
-          height: '80px', 
+          width: '90px', 
+          height: '90px', 
           borderRadius: '50%', 
           border: 'none', 
-          background: 'none', // Transparent to show image clearly
+          background: 'transparent',
           cursor: 'pointer',
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
           padding: 0,
-          filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.2))'
+          filter: 'drop-shadow(0 8px 20px rgba(255, 172, 199, 0.4))',
+          position: 'relative'
         }}
       >
-        <img src="./img/mascot.png" alt="Mascota" style=${{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img 
+          src="./img/mascot.png" 
+          alt="Mascota" 
+          style=${{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'contain',
+            pointerEvents: 'none'
+          }} 
+        />
       </${motion.button}>
     </div>
   `;
