@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import htm from 'https://esm.sh/htm';
 import confetti from 'https://esm.sh/canvas-confetti';
+import gamification from './GamificationSystem.js';
 
 const html = htm.bind(React.createElement);
 
@@ -109,6 +110,12 @@ const Agenda = () => {
             const isNowDone = !t.done;
             // Update points
             setPoints(prev => isNowDone ? prev + 10 : Math.max(0, prev - 10));
+            
+            // Award gamification points
+            if (isNowDone) {
+                gamification.taskCompleted();
+            }
+            
             return { ...t, done: isNowDone };
         }
         return t;

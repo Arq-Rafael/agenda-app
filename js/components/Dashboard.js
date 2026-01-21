@@ -3,11 +3,12 @@ import { motion } from 'framer-motion';
 import htm from 'https://esm.sh/htm';
 import MoodTracker from './MoodTracker.js';
 import UserProfile from './UserProfile.js';
+import ProgressStats from './ProgressStats.js';
+import MotivationalQuotes from './MotivationalQuotes.js';
 
 const html = htm.bind(React.createElement);
 
 const Dashboard = ({ setView }) => {
-  const [quote, setQuote] = useState("Eres capaz de cosas increíbles, respira.");
   const [userName, setUserName] = useState(localStorage.getItem('user_name') || '');
   const [showProfileModal, setShowProfileModal] = useState(!localStorage.getItem('user_name'));
 
@@ -30,7 +31,6 @@ const Dashboard = ({ setView }) => {
         >
           ¡Hola, ${userName || 'hermosa'}!
         </${motion.h1}>
-        <p style=${{ fontSize: '1.2rem', color: '#7a7a7a', fontStyle: 'italic' }}>"${quote}"</p>
         
         <button 
             onClick=${() => setShowProfileModal(true)}
@@ -39,6 +39,12 @@ const Dashboard = ({ setView }) => {
             (Cambiar nombre)
         </button>
       </section>
+
+      <!-- Progreso y Gamificación -->
+      <${ProgressStats} />
+
+      <!-- Frase Motivacional -->
+      <${MotivationalQuotes} inline=${true} />
 
       <${MoodTracker} />
 
@@ -81,6 +87,26 @@ const Dashboard = ({ setView }) => {
         >
           <h3>🍃 Respira</h3>
           <p>Un espacio seguro para relajarte y soltar la ansiedad.</p>
+        </${motion.div}>
+        
+        <${motion.div} 
+          className="card" 
+          whileHover=${{ scale: 1.03 }}
+          onClick=${() => setView('gratitude')}
+          style=${{ cursor: 'pointer', borderLeft: '5px solid #ffecd2', background: '#fff9f0' }}
+        >
+          <h3>📖 Gratitud</h3>
+          <p>Escribe lo que agradeces cada día.</p>
+        </${motion.div}>
+        
+        <${motion.div} 
+          className="card" 
+          whileHover=${{ scale: 1.03 }}
+          onClick=${() => setView('quotes')}
+          style=${{ cursor: 'pointer', borderLeft: '5px solid #667eea', background: '#f0f4ff' }}
+        >
+          <h3>⭐ Inspiración</h3>
+          <p>Frases que elevan tu espíritu.</p>
         </${motion.div}>
       </div>
 
